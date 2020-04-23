@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: discourse-postgres-srv
+  labels:
+    app: discourse
+    component: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: discourse
+    component: postgres
+  clusterIP: None
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: discourse
+    component: postgres
+  name: discourse-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discourse
+      component: postgres
+  template:
+    metadata:
+      labels:
+        app: discourse
+        component: postgres
+    spec:
+      containers:
+      - image: postgres:9.5.8
+        name: discourse-postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret
+              key: db_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret
+              key: db_password
+        - name: POSTGRES_DB
+          value: discourse
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+          - name: discourse-db-storage
+            mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: discourse-db-storage
+        persistentVolumeClaim:
+          claimName: postgres-pv-claim

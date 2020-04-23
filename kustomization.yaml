@@ -1,0 +1,9 @@
+secretGenerator:
+- name: discourse-secret
+  literals:
+  - smtp_user=admin
+  - smtp_password=yourpassword
+  - db_user=admin
+  - db_password=yourpassword
+  - admin_user=admin
+  - admin_password=yourpassword

@@ -1,0 +1,90 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sidekiq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discourse
+      component: sidekiq
+  template:
+    metadata:
+      labels:
+        app: discourse
+        component: sidekiq
+    spec:
+      containers:
+      - args:
+        - nami
+        - start
+        - --foreground
+        - discourse-sidekiq
+        image: bitnami/discourse
+        name: web-sidekiq
+        env:
+        - name: DISCOURSE_HOST
+          value: web-server
+        - name: DISCOURSE_PORT
+          value: "80"
+        - name: DISCOURSE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: admin_user
+        - name: DISCOURSE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: admin_password
+        - name: DISCOURSE_EMAIL
+          value: your@email.com
+        - name: DISCOURSE_SKIP_INSTALL
+          value: "yes"
+        - name: POSTGRESQL_HOST
+          value: discourse-postgres-srv
+        - name: POSTGRESQL_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: db_user
+        - name: POSTGRESQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: db_password
+        - name: DISCOURSE_POSTGRESQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: db_user
+        - name: DISCOURSE_POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discourse-secret-2b6mh7mh79
+              key: db_password
+        - name: DISCOURSE_POSTGRESQL_NAME
+          value: discourse
+        - name: REDIS_HOST
+          value: discourse-redis-srv
+        - name: REDIS_PORT_NUMBER
+          value: "6379"
+        - name: DISCOURSE_HOSTNAME
+          value: "your.domainame.com"
+        - name: DISCOURSE_SITENAME
+          value: "My Site"
+        - name: SMTP_HOST
+          value: "smtp.domainame.com"
+        - name: SMTP_PORT
+          value: "587"
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              key: smtp_user
+              name: discourse-secret-2b6mh7mh79
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: smtp_password
+              name: discourse-secret-2b6mh7mh79
+
