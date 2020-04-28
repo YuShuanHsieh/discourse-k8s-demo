@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: discourse-ingress
+  annotations:
+    networking.gke.io/managed-certificates: discourse-cert
+spec:
+  rules:
+  - host: <your domain>
+    http:
+      paths:
+      - backend:
+          serviceName: web-server
+          servicePort: 80
