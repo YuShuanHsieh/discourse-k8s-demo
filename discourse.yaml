@@ -97,11 +97,19 @@ spec:
         image: bitnami/discourse
         name: web-server
         ports:
-        - containerPort: 3000
+        - name: server-port
+          containerPort: 3000
           protocol: TCP
         volumeMounts:
           - name: discourse-storage
             mountPath: /bitnami
+        livenessProbe:
+          httpGet:
+            path: /srv/status
+            port: server-port
+          initialDelaySeconds: 300
+          periodSeconds: 60
+    
       volumes:
       - name: discourse-storage
         persistentVolumeClaim:
