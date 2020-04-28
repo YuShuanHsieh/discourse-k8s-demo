@@ -34,7 +34,7 @@ spec:
         component: postgres
     spec:
       containers:
-      - image: postgres:9.5.8
+      - image: postgres:11
         name: discourse-postgres
         env:
         - name: POSTGRES_USER
@@ -54,6 +54,7 @@ spec:
         volumeMounts:
           - name: discourse-db-storage
             mountPath: /var/lib/postgresql/data
+            subPath: data
       volumes:
       - name: discourse-db-storage
         persistentVolumeClaim:
